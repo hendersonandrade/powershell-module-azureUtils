@@ -48,7 +48,7 @@
             ReleaseNotes = 'See CHANGELOG.md: https://github.com/hendersonandrade/powershell-module-azureUtils/blob/main/CHANGELOG.md'
 
             # Pre-release label. Leave empty ('') for a stable release.
-            Prerelease   = 'beta'
+            # Prerelease   = 'beta'
         }
     }
 }
