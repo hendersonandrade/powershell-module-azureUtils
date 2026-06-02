@@ -18,19 +18,20 @@
     # Unique identifier for this module.
     GUID              = 'd0c4f8a2-3b6e-4e1a-9f7c-2a5b8d3e1c47'
 
-    Author            = 'TrimTechBR'
-    CompanyName       = 'TrimTechBR'
-    Copyright         = '(c) TrimTechBR. All rights reserved.'
+    Author            = 'Henderson Andrade'
+    CompanyName       = 'Henderson Andrade | Personal Project'
+    Copyright         = 'Henderson Andrade | Personal Project'
 
     Description       = 'Practical utility cmdlets for Azure administration, governance, inventory and operational automation. Complements (does not replace) the Az modules. Includes Export-AzureUtilsTagInventory, which reads every resource in scope via Azure Resource Graph and exports a tag inventory to Excel (one TAG_<name> column per tag).'
 
-    # Az.Accounts resolves the Azure context; Az.ResourceGraph powers the
-    # inventory query. ImportExcel (used by Export-AzureUtilsTagInventory to write
-    # the .xlsx) is checked at runtime and is intentionally NOT a hard requirement,
-    # so importing the module does not force it on consumers who do not export.
+    # Hard dependencies (auto-installed by Install-Module AzureUtils):
+    #   Az.Accounts      - resolves the Azure context (Connect-AzAccount)
+    #   Az.ResourceGraph - powers the inventory query
+    #   ImportExcel      - writes the .xlsx in Export-AzureUtilsTagInventory
     RequiredModules   = @(
         @{ ModuleName = 'Az.Accounts';      ModuleVersion = '2.12.1' },
-        @{ ModuleName = 'Az.ResourceGraph'; ModuleVersion = '0.13.0' }
+        @{ ModuleName = 'Az.ResourceGraph'; ModuleVersion = '0.13.0' },
+        @{ ModuleName = 'ImportExcel';      ModuleVersion = '7.0.0' }
     )
 
     # Only commands placed under Public/ are exported.

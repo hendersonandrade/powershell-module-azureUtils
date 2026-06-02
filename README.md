@@ -15,10 +15,12 @@ Practical utility cmdlets for **Azure administration, governance, inventory, tro
 | `Az.ResourceGraph`| Yes      | Powers the inventory query (multi-scope, auto-paginated). |
 | `ImportExcel`     | Yes      | Used by `Export-AzureUtilsTagInventory` to write the `.xlsx`. |
 
+All three modules above are declared as `RequiredModules`, so `Install-Module` pulls them in automatically.
+
 ## Install
 
 ```powershell
-Install-Module AzureUtils -Scope CurrentUser
+Install-Module AzureUtils -Scope CurrentUser            # also installs Az.Accounts, Az.ResourceGraph, ImportExcel
 # Pre-release:
 Install-Module AzureUtils -AllowPrerelease -Scope CurrentUser
 ```
