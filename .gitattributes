@@ -1,0 +1,13 @@
+# Normalize line endings: store and check out LF everywhere.
+# Keeps the bash steps in GitHub Actions (Linux runners) from receiving CRLF,
+# which would break `set -euo pipefail` and similar.
+* text=auto eol=lf
+
+*.ps1   text eol=lf
+*.psd1  text eol=lf
+*.psm1  text eol=lf
+*.ps1xml text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf

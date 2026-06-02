@@ -1,0 +1,16 @@
+# PowerShell / build artifacts
+*.nupkg
+output/
+out/
+bin/
+obj/
+
+# Test results
+testResults*.xml
+coverage*.xml
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
