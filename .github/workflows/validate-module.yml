@@ -1,4 +1,4 @@
-name: ci
+name: Validate PowerShell Module
 
 on:
   pull_request:
