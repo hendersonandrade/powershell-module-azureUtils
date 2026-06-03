@@ -6,6 +6,8 @@ All notable changes to AzureUtils are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-06-03
+
 ### Added
 - `Find-AzureUtilsPublicResource`: surfaces resources exposed to the public
   internet via Azure Resource Graph, with an `Exposure` column. Categories
