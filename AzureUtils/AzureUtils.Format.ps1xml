@@ -34,6 +34,36 @@
       </TableControl>
     </View>
 
+    <!-- Publicly exposed resources: the Exposure column is colored (red). -->
+    <View>
+      <Name>AzureUtils.PublicResource</Name>
+      <ViewSelectedBy>
+        <TypeName>AzureUtils.PublicResource</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader><Label>Name</Label><Width>30</Width></TableColumnHeader>
+          <TableColumnHeader><Label>ResourceType</Label><Width>38</Width></TableColumnHeader>
+          <TableColumnHeader><Label>ResourceGroup</Label><Width>20</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Subscription</Label><Width>22</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Exposure</Label></TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem><PropertyName>Name</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>ResourceType</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>ResourceGroup</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>SubscriptionName</PropertyName></TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>if ($PSStyle) { "$($PSStyle.Foreground.BrightRed)$($_.Exposure)$($PSStyle.Reset)" } else { $_.Exposure }</ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
     <!-- Empty resource groups: the group name is colored when supported. -->
     <View>
       <Name>AzureUtils.EmptyResourceGroup</Name>

@@ -6,6 +6,13 @@ All notable changes to AzureUtils are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- `Find-AzureUtilsPublicResource`: surfaces resources exposed to the public
+  internet via Azure Resource Graph, with an `Exposure` column. Categories
+  (`-Type`): associated public IPs, `publicNetworkAccess = Enabled`, open /
+  anonymous storage, and NSG inbound rules from the Internet. Scope by
+  subscription(s) or management group(s); emits objects and a colored table.
+
 ## [0.1.8] - 2026-06-03
 
 ### Added

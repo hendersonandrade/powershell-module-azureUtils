@@ -44,7 +44,8 @@
         'Export-AzureUtilsTagInventory',
         'Set-AzureUtilsTagInventory',
         'Find-AzureUtilsOrphanResource',
-        'Find-AzureUtilsEmptyResourceGroup'
+        'Find-AzureUtilsEmptyResourceGroup',
+        'Find-AzureUtilsPublicResource'
     )
     CmdletsToExport   = @()
     VariablesToExport = @()
