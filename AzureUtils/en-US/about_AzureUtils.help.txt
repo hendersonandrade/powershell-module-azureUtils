@@ -1,0 +1,83 @@
+TOPIC
+    about_AzureUtils
+
+SHORT DESCRIPTION
+    Practical utility cmdlets for Azure administration, governance, inventory
+    and operational automation. AzureUtils complements (does not replace) the
+    Az modules with simple, automation-ready commands.
+
+LONG DESCRIPTION
+    AzureUtils is a PowerShell 7+ module (CompatiblePSEditions = Core). It is
+    installed from the PowerShell Gallery and pulls in its required modules
+    automatically:
+
+        Install-Module AzureUtils -Scope CurrentUser
+
+    Requirements (declared as RequiredModules, so they are installed for you):
+
+        Az.Accounts       resolves the Azure context (Connect-AzAccount)
+        Az.ResourceGraph  powers the inventory query (multi-scope, paginated)
+        Az.Resources      applies tags back to resources (Update-AzTag)
+        ImportExcel       reads/writes the .xlsx workbook
+
+    All commands emit messages in en-US. Read commands return objects; the
+    tag-inventory commands write an Excel workbook and a console report.
+
+    TAGS AT EVERY SCOPE
+        Azure tags can be applied to resources and to the containers above them
+        (resource groups and subscriptions). The tag-inventory commands cover
+        resources by default and, on request, the containers themselves.
+
+CMDLETS
+    Export-AzureUtilsTagInventory
+        Reads every resource in scope (management group(s), subscription(s),
+        resource group(s), and an optional -NameContains match) via Azure
+        Resource Graph and exports a tag inventory to Excel. The workbook has
+        fixed identity columns (resourceId, Resource Name, Sub Name, Resource
+        Group Name, Resource Type, Region) plus one TAG_<name> column per tag.
+        -FilterTags limits the exported tag columns; -IncludeSubscription and
+        -IncludeResourceGroup add the containers themselves (their own tags) as
+        rows; -OutputPath sets the .xlsx; -TableStyle and -Quiet tune output.
+
+    Set-AzureUtilsTagInventory
+        Reads an inventory .xlsx and merges the TAG_<name> values back onto each
+        resource identified by resourceId (Update-AzTag -Operation Merge):
+            * tags absent from the file are kept (never removed);
+            * an empty TAG_<name> cell is ignored (never created or changed);
+            * a manually added TAG_<name> column (with a value) creates the tag.
+        It supports -WhatIf and -Confirm and groups rows by subscription.
+
+    THE ROUND TRIP
+        Export-AzureUtilsTagInventory  ->  edit the workbook (change tag values,
+        add TAG_<new> columns)  ->  Set-AzureUtilsTagInventory to apply.
+
+EXAMPLES
+    # Export every enabled subscription in the current context
+    Export-AzureUtilsTagInventory -OutputPath '.\inventory.xlsx'
+
+    # Export a management group, only two tag columns
+    Export-AzureUtilsTagInventory -ManagementGroupId 'PLAT' `
+        -FilterTags 'costCenter','environment' -OutputPath '.\report.xlsx'
+
+    # Preview, then apply edits back to Azure
+    Set-AzureUtilsTagInventory -InputPath '.\report.xlsx' -WhatIf
+    Set-AzureUtilsTagInventory '.\report.xlsx'
+
+NOTE
+    Connect with Connect-AzAccount before running any command. Get a command's
+    full help with:  Get-Help Export-AzureUtilsTagInventory -Full
+
+SEE ALSO
+    Export-AzureUtilsTagInventory
+    Set-AzureUtilsTagInventory
+    https://github.com/hendersonandrade/powershell-module-azureUtils
+    Connect-AzAccount
+    Update-AzTag
+
+KEYWORDS
+    Azure
+    Tags
+    Inventory
+    ResourceGraph
+    Governance
+    Excel

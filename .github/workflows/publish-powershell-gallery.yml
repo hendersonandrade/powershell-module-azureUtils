@@ -167,6 +167,7 @@ jobs:
             (Join-Path $src 'AzureUtils.psm1'),
             (Join-Path $src 'Public'),
             (Join-Path $src 'Private'),
+            (Join-Path $src 'en-US'),
             'LICENSE',
             'README.md',
             'CHANGELOG.md'
