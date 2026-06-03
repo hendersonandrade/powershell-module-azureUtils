@@ -91,6 +91,32 @@ Report exported to C:\Temp\report.xlsx
 
 **Excel layout:** fixed columns `resourceId`, `Resource Name`, `Sub Name`, `Resource Group Name`, `Resource Type`, `Region`, followed by one `TAG_<name>` column. Without `-FilterTags`, every tag key found is a column (sorted union); with `-FilterTags`, only the listed keys appear, in the given order (blank where a resource lacks that tag). The table style defaults to a neutral look — change it with `-TableStyle` (any ImportExcel style name).
 
+## `Set-AzureUtilsTagInventory`
+
+Reads an inventory `.xlsx` (the one produced by `Export-AzureUtilsTagInventory`, optionally edited) and **applies** the `TAG_<name>` values back onto each resource identified by its `resourceId`. The operation is a **merge** (`Update-AzTag -Operation Merge`):
+
+- tags present on the resource but **absent from the file are kept** (never removed);
+- a `TAG_<name>` cell left **empty is ignored** (never created or changed);
+- a **manually added** `TAG_<name>` column (with a value) **creates** that tag.
+
+This cmdlet changes Azure resources, so it supports `-WhatIf` and `-Confirm`. Rows are grouped by subscription (the context is switched per group). Requires `Az.Resources`.
+
+| Parameter | Purpose |
+|-----------|---------|
+| `-InputPath` (required, pos. 0) | Path to the `.xlsx` to read (alias `-Path`). |
+| `-WorksheetName` | Worksheet to read (default `TagInventory`). |
+| `-Quiet` | Suppress the per-resource log lines (errors still shown). |
+
+```powershell
+# Preview the changes without touching anything
+Set-AzureUtilsTagInventory -InputPath 'C:\Temp\report.xlsx' -WhatIf
+
+# Apply (edit the TAG_* cells / add TAG_<new> columns first)
+Set-AzureUtilsTagInventory 'C:\Temp\report.xlsx'
+```
+
+Round-trip: `Export-AzureUtilsTagInventory` → edit the workbook (change tag values, add `TAG_<new>` columns) → `Set-AzureUtilsTagInventory` to apply.
+
 ## Release & publishing
 
 Versioning is driven by the manifest (`AzureUtils/AzureUtils.psd1`):

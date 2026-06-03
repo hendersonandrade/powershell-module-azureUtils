@@ -102,7 +102,7 @@ jobs:
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
           Install-Module `
-            -Name Az.Accounts, Az.ResourceGraph, ImportExcel `
+            -Name Az.Accounts, Az.ResourceGraph, Az.Resources, ImportExcel `
             -Scope CurrentUser `
             -Repository PSGallery `
             -Force `
@@ -223,7 +223,7 @@ jobs:
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
           Install-Module `
-            -Name PowerShellGet, Az.Accounts, Az.ResourceGraph, ImportExcel `
+            -Name PowerShellGet, Az.Accounts, Az.ResourceGraph, Az.Resources, ImportExcel `
             -Scope CurrentUser `
             -Repository PSGallery `
             -Force `

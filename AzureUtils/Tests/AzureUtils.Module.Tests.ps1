@@ -22,7 +22,7 @@ Describe 'AzureUtils manifest and surface' {
 
     It 'exports exactly the public functions' {
         (Get-Command -Module AzureUtils).Name | Sort-Object |
-            Should -Be @('Export-AzureUtilsTagInventory')
+            Should -Be @('Export-AzureUtilsTagInventory', 'Set-AzureUtilsTagInventory')
     }
 
     It 'does not export private helpers' {

@@ -20,5 +20,10 @@ All notable changes to AzureUtils are documented here. The format follows
   table style (`-TableStyle`). Requires `ImportExcel`. Progress is printed as a
   leveled console report (Title / Scope / counts + `[INFO]`/`[ERROR]` lines); the
   cmdlet does not emit pipeline objects.
+- `Set-AzureUtilsTagInventory`: reads an inventory `.xlsx` and merges the
+  `TAG_<name>` values back onto each resource (`Update-AzTag -Operation Merge`).
+  Keeps tags absent from the file, ignores empty cells, and creates tags from
+  manually added `TAG_<name>` columns. Groups by subscription, supports `-WhatIf`
+  / `-Confirm`, and requires `Az.Resources`.
 - CI (PSScriptAnalyzer + Pester) and release automation: `Auto-tag release on
   main` and `Publish PowerShell Gallery` workflows.

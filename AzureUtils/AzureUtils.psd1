@@ -27,15 +27,17 @@
     # Hard dependencies (auto-installed by Install-Module AzureUtils):
     #   Az.Accounts      - resolves the Azure context (Connect-AzAccount)
     #   Az.ResourceGraph - powers the inventory query
-    #   ImportExcel      - writes the .xlsx in Export-AzureUtilsTagInventory
+    #   Az.Resources     - applies tags back to resources (Update-AzTag)
+    #   ImportExcel      - reads/writes the .xlsx
     RequiredModules   = @(
         @{ ModuleName = 'Az.Accounts';      ModuleVersion = '2.12.1' },
         @{ ModuleName = 'Az.ResourceGraph'; ModuleVersion = '0.13.0' },
+        @{ ModuleName = 'Az.Resources';     ModuleVersion = '6.0.0' },
         @{ ModuleName = 'ImportExcel';      ModuleVersion = '7.0.0' }
     )
 
     # Only commands placed under Public/ are exported.
-    FunctionsToExport = @('Export-AzureUtilsTagInventory')
+    FunctionsToExport = @('Export-AzureUtilsTagInventory', 'Set-AzureUtilsTagInventory')
     CmdletsToExport   = @()
     VariablesToExport = @()
     AliasesToExport   = @()
