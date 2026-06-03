@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <ViewDefinitions>
+    <!-- Orphaned resources: the Reason column is colored (when the host supports
+         $PSStyle); objects still flow unchanged through the pipeline. -->
+    <View>
+      <Name>AzureUtils.OrphanResource</Name>
+      <ViewSelectedBy>
+        <TypeName>AzureUtils.OrphanResource</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader><Label>Name</Label><Width>32</Width></TableColumnHeader>
+          <TableColumnHeader><Label>ResourceType</Label><Width>40</Width></TableColumnHeader>
+          <TableColumnHeader><Label>ResourceGroup</Label><Width>22</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Location</Label><Width>12</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Subscription</Label><Width>26</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Reason</Label></TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem><PropertyName>Name</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>ResourceType</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>ResourceGroup</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>Location</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>SubscriptionName</PropertyName></TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>if ($PSStyle) { "$($PSStyle.Foreground.BrightYellow)$($_.Reason)$($PSStyle.Reset)" } else { $_.Reason }</ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+    <!-- Empty resource groups: the group name is colored when supported. -->
+    <View>
+      <Name>AzureUtils.EmptyResourceGroup</Name>
+      <ViewSelectedBy>
+        <TypeName>AzureUtils.EmptyResourceGroup</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader><Label>ResourceGroupName</Label><Width>34</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Location</Label><Width>14</Width></TableColumnHeader>
+          <TableColumnHeader><Label>Subscription</Label></TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <ScriptBlock>if ($PSStyle) { "$($PSStyle.Foreground.BrightCyan)$($_.ResourceGroupName)$($PSStyle.Reset)" } else { $_.ResourceGroupName }</ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem><PropertyName>Location</PropertyName></TableColumnItem>
+              <TableColumnItem><PropertyName>SubscriptionName</PropertyName></TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+  </ViewDefinitions>
+</Configuration>
