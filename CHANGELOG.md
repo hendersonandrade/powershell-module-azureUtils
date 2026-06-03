@@ -12,7 +12,9 @@ All notable changes to AzureUtils are documented here. The format follows
   Excel workbook via Azure Resource Graph. Scope filters for management group(s),
   subscription(s), resource group(s), and a case-insensitive `-NameContains`.
   `-OutputPath` sets the `.xlsx` destination; `-FilterTags` restricts the exported
-  tag columns (in the given order). The workbook has fixed identity columns
+  tag columns (in the given order); `-IncludeSubscription` / `-IncludeResourceGroup`
+  also inventory the subscriptions / resource groups themselves (their own tags) as
+  extra rows from `resourcecontainers`. The workbook has fixed identity columns
   (`resourceId`, `Resource Name`, `Sub Name`, `Resource Group Name`,
   `Resource Type`, `Region`) plus one `TAG_<name>` column per tag, with a neutral
   table style (`-TableStyle`). Requires `ImportExcel`. Progress is printed as a

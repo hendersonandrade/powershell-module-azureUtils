@@ -36,6 +36,8 @@ Exports an Azure resource + tag inventory to an Excel workbook via Azure Resourc
 | `-ResourceGroupName` | yes (`string[]`) | Filter by resource group name(s). |
 | `-NameContains` | no (single term) | Keep resources whose name contains this text. |
 | `-FilterTags` | yes (`string[]`) | Export only these tag keys, in this order (default: all tags found). |
+| `-IncludeSubscription` | — | Also add the subscriptions themselves as rows (their own tags). |
+| `-IncludeResourceGroup` | — | Also add the resource groups themselves as rows (their own tags). |
 | `-OutputPath` | — (required) | Destination `.xlsx` file. |
 | `-TableStyle` | — | Excel table style (default neutral `Light1`). |
 | `-Quiet` | — | Suppress per-resource log lines (show a progress bar instead). |
@@ -62,7 +64,14 @@ Export-AzureUtilsTagInventory -ManagementGroupId 'PLAT', 'SANDBOX' -OutputPath '
 Export-AzureUtilsTagInventory -SubscriptionId $sub1, $sub2 `
     -ResourceGroupName 'rg-prod' -NameContains 'sql' `
     -OutputPath '.\sql-prod.xlsx' -Quiet
+
+# 5) Also inventory the subscriptions and resource groups themselves (their tags)
+Export-AzureUtilsTagInventory -ManagementGroupId 'PLAT' `
+    -IncludeSubscription -IncludeResourceGroup `
+    -OutputPath '.\full.xlsx'
 ```
+
+> By default only resource-level tags are inventoried. `-IncludeSubscription` and `-IncludeResourceGroup` add the subscriptions / resource groups as extra rows (from `resourcecontainers`) so tags applied at those scopes are captured too.
 
 Console report:
 
