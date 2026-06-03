@@ -6,6 +6,16 @@ All notable changes to AzureUtils are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-06-03
+
+### Added
+- `Find-AzureUtilsOrphanResource`: finds orphaned resources (unattached disks,
+  NICs without a VM/private endpoint, public IPs without an IP config/NAT gateway,
+  NSGs and route tables with no associations) via Azure Resource Graph, with a
+  `Reason` column. Scope by subscription(s) or management group(s); `-Type`
+  narrows the categories. Emits objects and a colored console table.
+- `Find-AzureUtilsEmptyResourceGroup`: lists resource groups with no resources.
+
 ## [0.1.7] - 2026-06-03
 
 ### Added

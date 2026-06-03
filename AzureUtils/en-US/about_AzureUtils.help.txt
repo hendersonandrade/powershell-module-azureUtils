@@ -51,6 +51,15 @@ CMDLETS
         Export-AzureUtilsTagInventory  ->  edit the workbook (change tag values,
         add TAG_<new> columns)  ->  Set-AzureUtilsTagInventory to apply.
 
+    Find-AzureUtilsOrphanResource
+        Finds orphaned resources (unattached disks, NICs without a VM/private
+        endpoint, public IPs without an IP configuration/NAT gateway, and NSGs /
+        route tables with no associations) and explains each in a Reason column.
+        -Type narrows the categories.
+
+    Find-AzureUtilsEmptyResourceGroup
+        Lists resource groups that contain no resources.
+
 EXAMPLES
     # Export every enabled subscription in the current context
     Export-AzureUtilsTagInventory -OutputPath '.\inventory.xlsx'
@@ -70,6 +79,8 @@ NOTE
 SEE ALSO
     Export-AzureUtilsTagInventory
     Set-AzureUtilsTagInventory
+    Find-AzureUtilsOrphanResource
+    Find-AzureUtilsEmptyResourceGroup
     https://github.com/hendersonandrade/powershell-module-azureUtils
     Connect-AzAccount
     Update-AzTag

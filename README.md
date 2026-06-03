@@ -117,6 +117,37 @@ Set-AzureUtilsTagInventory 'C:\Temp\report.xlsx'
 
 Round-trip: `Export-AzureUtilsTagInventory` → edit the workbook (change tag values, add `TAG_<new>` columns) → `Set-AzureUtilsTagInventory` to apply.
 
+## `Find-AzureUtilsOrphanResource`
+
+Finds resources that appear orphaned (unused/unassociated) via Azure Resource Graph and explains each in a `Reason` column. Returns objects (also shown as a colored console table). Categories (all by default, narrow with `-Type`):
+
+| `-Type` value | Orphan when… |
+|---------------|--------------|
+| `Disk` | managed disk `diskState = Unattached` |
+| `NetworkInterface` | NIC with no VM and no private endpoint |
+| `PublicIP` | public IP with no IP configuration and no NAT gateway |
+| `NetworkSecurityGroup` | NSG not associated to any NIC or subnet |
+| `RouteTable` | route table not associated to any subnet |
+
+```powershell
+Find-AzureUtilsOrphanResource                                   # current context, all categories
+Find-AzureUtilsOrphanResource -ManagementGroupId 'PLAT' -Type Disk, PublicIP
+Find-AzureUtilsOrphanResource | Export-Csv .\orphans.csv -NoTypeInformation
+```
+
+> Heuristics — review before deleting anything.
+
+## `Find-AzureUtilsEmptyResourceGroup`
+
+Lists resource groups whose resource count (from `resources`) is zero, across the chosen scope.
+
+```powershell
+Find-AzureUtilsEmptyResourceGroup
+Find-AzureUtilsEmptyResourceGroup -SubscriptionId $sub1, $sub2
+```
+
+Both `Find-*` cmdlets take `-SubscriptionId` (default: all enabled) or `-ManagementGroupId` (mutually exclusive) and emit objects for the pipeline.
+
 ## Release & publishing
 
 Versioning is driven by the manifest (`AzureUtils/AzureUtils.psd1`):
