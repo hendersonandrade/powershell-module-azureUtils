@@ -22,7 +22,7 @@ jobs:
           Install-Module -Name PSScriptAnalyzer -Scope CurrentUser -Force
           # RequiredModules of the manifest must be present so Import-Module / the
           # Pester tests can load AzureUtils.
-          Install-Module -Name Az.Accounts, Az.ResourceGraph, ImportExcel -Scope CurrentUser -Force -AllowClobber
+          Install-Module -Name Az.Accounts, Az.ResourceGraph, Az.Resources, ImportExcel -Scope CurrentUser -Force -AllowClobber
 
       - name: PSScriptAnalyzer
         shell: pwsh

@@ -102,7 +102,7 @@ jobs:
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
           Install-Module `
-            -Name Az.Accounts, Az.ResourceGraph, ImportExcel `
+            -Name Az.Accounts, Az.ResourceGraph, Az.Resources, ImportExcel `
             -Scope CurrentUser `
             -Repository PSGallery `
             -Force `
@@ -167,6 +167,7 @@ jobs:
             (Join-Path $src 'AzureUtils.psm1'),
             (Join-Path $src 'Public'),
             (Join-Path $src 'Private'),
+            (Join-Path $src 'en-US'),
             'LICENSE',
             'README.md',
             'CHANGELOG.md'
@@ -223,7 +224,7 @@ jobs:
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
           Install-Module `
-            -Name PowerShellGet, Az.Accounts, Az.ResourceGraph, ImportExcel `
+            -Name PowerShellGet, Az.Accounts, Az.ResourceGraph, Az.Resources, ImportExcel `
             -Scope CurrentUser `
             -Repository PSGallery `
             -Force `

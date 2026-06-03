@@ -34,6 +34,14 @@ function Export-AzureUtilsTagInventory {
             Export only these tag keys (one 'TAG_<name>' column each, in this order).
             When omitted, every tag key found is exported.
 
+        .PARAMETER IncludeSubscription
+            Also inventory the subscriptions themselves (as extra rows) with their
+            own tags. Tags applied at subscription scope are otherwise not captured.
+
+        .PARAMETER IncludeResourceGroup
+            Also inventory the resource groups themselves (as extra rows) with their
+            own tags. Tags applied at resource-group scope are otherwise not captured.
+
         .PARAMETER OutputPath
             Destination .xlsx file path.
 
@@ -68,6 +76,14 @@ function Export-AzureUtilsTagInventory {
             resources whose name contains 'sql', and suppresses the per-resource log
             (a progress bar is shown instead).
 
+        .EXAMPLE
+            Export-AzureUtilsTagInventory -ManagementGroupId 'PLAT' `
+                -IncludeSubscription -IncludeResourceGroup `
+                -OutputPath '.\full.xlsx'
+
+            Inventories resources and also adds the subscriptions and resource groups
+            themselves (as rows), so tags applied at those scopes are captured too.
+
         .LINK
             https://github.com/hendersonandrade/powershell-module-azureUtils
     #>
@@ -84,6 +100,12 @@ function Export-AzureUtilsTagInventory {
         [string] $NameContains,
 
         [string[]] $FilterTags,
+
+        # Also inventory the subscriptions / resource groups themselves (their own
+        # tags), as extra rows from the resourcecontainers table.
+        [switch] $IncludeSubscription,
+
+        [switch] $IncludeResourceGroup,
 
         [Parameter(Mandatory)]
         [string] $OutputPath,
@@ -128,27 +150,38 @@ function Export-AzureUtilsTagInventory {
     }
 
     $baseQuery = New-AzureUtilsResourceQuery -ResourceGroupName $ResourceGroupName -NameContains $NameContains
-    Write-Verbose "Base query:`n$baseQuery"
 
-    # ---- Collect resources (tags arrive with the query); count from the data so
-    #      the header totals are exact. A progress bar gives live feedback while
-    #      Resource Graph is paginated. ----
-    $dataQuery = "$baseQuery`n| project id, name, type, resourceGroup, location, subscriptionId, tags"
+    # Build the set of queries to run: resources, plus optionally the resource
+    # group and subscription containers (so their own tags are inventoried too).
+    $queries = [System.Collections.Generic.List[string]]::new()
+    $queries.Add("$baseQuery`n| project id, name, type, resourceGroup, location, subscriptionId, tags")
+    if ($IncludeResourceGroup) {
+        $queries.Add((New-AzureUtilsContainerQuery -ContainerType ResourceGroup -NameContains $NameContains -ResourceGroupName $ResourceGroupName))
+    }
+    if ($IncludeSubscription) {
+        $queries.Add((New-AzureUtilsContainerQuery -ContainerType Subscription -NameContains $NameContains))
+    }
+
+    # ---- Collect (tags arrive with the query); count from the data so the header
+    #      totals are exact. A progress bar gives live feedback during pagination. ----
     $records   = [System.Collections.Generic.List[object]]::new()
     $errors    = [System.Collections.Generic.List[string]]::new()
     $collected = 0
     $activity  = 'Collecting Azure resources from Azure Resource Graph'
 
-    Invoke-AzureUtilsGraphQuery -Query $dataQuery @scope | ForEach-Object {
-        try {
-            $records.Add(($_ | ConvertTo-AzureUtilsTagRecord -SubscriptionName $nameMap))
-            $collected++
-            if ($collected % 50 -eq 0) {
-                Write-Progress -Id 1 -Activity $activity -Status "$collected resources collected" -PercentComplete -1
+    foreach ($query in $queries) {
+        Write-Verbose "Query:`n$query"
+        Invoke-AzureUtilsGraphQuery -Query $query @scope | ForEach-Object {
+            try {
+                $records.Add(($_ | ConvertTo-AzureUtilsTagRecord -SubscriptionName $nameMap))
+                $collected++
+                if ($collected % 50 -eq 0) {
+                    Write-Progress -Id 1 -Activity $activity -Status "$collected items collected" -PercentComplete -1
+                }
             }
-        }
-        catch {
-            $errors.Add($_.Exception.Message)
+            catch {
+                $errors.Add($_.Exception.Message)
+            }
         }
     }
     Write-Progress -Id 1 -Activity $activity -Completed
