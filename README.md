@@ -146,7 +146,26 @@ Find-AzureUtilsEmptyResourceGroup
 Find-AzureUtilsEmptyResourceGroup -SubscriptionId $sub1, $sub2
 ```
 
-Both `Find-*` cmdlets take `-SubscriptionId` (default: all enabled) or `-ManagementGroupId` (mutually exclusive) and emit objects for the pipeline.
+## `Find-AzureUtilsPublicResource`
+
+Surfaces resources exposed to the public internet via Azure Resource Graph, with an `Exposure` column explaining each finding. Returns objects (also a colored console table). Categories (all by default, narrow with `-Type`):
+
+| `-Type` value | Flags |
+|---------------|-------|
+| `PublicIp` | public IP addresses that are associated (in use) |
+| `PublicNetworkAccess` | resources with `properties.publicNetworkAccess = Enabled` (managed disks excluded — `Enabled` by default and not a real exposure) |
+| `StorageOpen` | storage with anonymous blob access or `networkAcls.defaultAction = Allow` |
+| `NsgInternetInbound` | NSG inbound Allow rules sourced from the Internet (`*` / `0.0.0.0/0`) |
+
+```powershell
+Find-AzureUtilsPublicResource
+Find-AzureUtilsPublicResource -ManagementGroupId 'PLAT' -Type StorageOpen, NsgInternetInbound
+Find-AzureUtilsPublicResource | Export-Csv .\public-exposure.csv -NoTypeInformation
+```
+
+> Heuristics — a resource may appear more than once when several categories apply. Review before acting.
+
+All `Find-*` cmdlets take `-SubscriptionId` (default: all enabled) or `-ManagementGroupId` (mutually exclusive) and emit objects for the pipeline.
 
 ## Release & publishing
 

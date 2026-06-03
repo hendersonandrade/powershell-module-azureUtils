@@ -26,6 +26,7 @@ Describe 'AzureUtils manifest and surface' {
                 'Export-AzureUtilsTagInventory',
                 'Find-AzureUtilsEmptyResourceGroup',
                 'Find-AzureUtilsOrphanResource',
+                'Find-AzureUtilsPublicResource',
                 'Set-AzureUtilsTagInventory'
             )
     }
