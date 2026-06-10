@@ -42,6 +42,13 @@ function Export-AzureUtilsTagInventory {
             Also inventory the resource groups themselves (as extra rows) with their
             own tags. Tags applied at resource-group scope are otherwise not captured.
 
+        .PARAMETER IncludeTagUnsupported
+            By default, resources whose resource type does not support tags are
+            omitted from the export (they would only add empty TAG_ rows). Use this
+            switch to keep them and add a 'Tag Support' column showing 'Supported'
+            (green) or 'Not supported' (red) for every row. Tag support is resolved
+            from the ARM Resource Providers API, with a curated fallback.
+
         .PARAMETER OutputPath
             Destination .xlsx file path.
 
@@ -84,6 +91,14 @@ function Export-AzureUtilsTagInventory {
             Inventories resources and also adds the subscriptions and resource groups
             themselves (as rows), so tags applied at those scopes are captured too.
 
+        .EXAMPLE
+            Export-AzureUtilsTagInventory -IncludeTagUnsupported `
+                -OutputPath '.\inventory.xlsx'
+
+            Keeps resources whose type does not support tags (omitted by default) and
+            adds a 'Tag Support' column flagging each row as 'Supported' (green) or
+            'Not supported' (red).
+
         .LINK
             https://github.com/hendersonandrade/powershell-module-azureUtils
     #>
@@ -106,6 +121,10 @@ function Export-AzureUtilsTagInventory {
         [switch] $IncludeSubscription,
 
         [switch] $IncludeResourceGroup,
+
+        # Keep resources whose type does not support tags (omitted by default) and
+        # add a colored 'Tag Support' column.
+        [switch] $IncludeTagUnsupported,
 
         [Parameter(Mandatory)]
         [string] $OutputPath,
@@ -186,6 +205,23 @@ function Export-AzureUtilsTagInventory {
     }
     Write-Progress -Id 1 -Activity $activity -Completed
 
+    # ---- Tag-support: annotate each record, then either drop the unsupported ones
+    #      (default) or keep them for the 'Tag Support' column (-IncludeTagUnsupported). ----
+    $supportMap = Get-AzureUtilsTagSupportMap
+    foreach ($rec in $records) {
+        $supported = if ($supportMap.ContainsKey($rec.ResourceType)) { [bool]$supportMap[$rec.ResourceType] } else { $true }
+        $rec | Add-Member -NotePropertyName 'TagSupported' -NotePropertyValue $supported -Force
+    }
+
+    $skipped = 0
+    if (-not $IncludeTagUnsupported) {
+        $kept = [System.Collections.Generic.List[object]]::new()
+        foreach ($rec in $records) {
+            if ($rec.TagSupported) { $kept.Add($rec) } else { $skipped++ }
+        }
+        $records = $kept
+    }
+
     $total = $records.Count
     $subCount = if ($PSCmdlet.ParameterSetName -eq 'ManagementGroup') {
         ($records | ForEach-Object { $_.SubscriptionId } | Where-Object { $_ } | Sort-Object -Unique).Count
@@ -200,7 +236,12 @@ function Export-AzureUtilsTagInventory {
     Write-Host ('-' * 51) -ForegroundColor DarkGray
     Write-Host ("    Scope: {0} [{1}]" -f $scopeLabel, $scopeType)
     Write-Host ("    Number of Subscriptions: {0}" -f $subCount)
-    Write-Host ("    Number of Resources: {0}" -f $total)
+    if ($skipped -gt 0) {
+        Write-Host ("    Number of Resources: {0} ({1} skipped - resource type does not support tags)" -f $total, $skipped)
+    }
+    else {
+        Write-Host ("    Number of Resources: {0}" -f $total)
+    }
     Write-Host ''
     Write-Host 'Starting export...'
 
@@ -224,9 +265,26 @@ function Export-AzureUtilsTagInventory {
     }
 
     # ---- Write the workbook ----
-    $excelRows = @(Get-AzureUtilsTagExcelRow -Record $records -TagKey $FilterTags)
-    $excelRows | Export-Excel -Path $OutputPath -WorksheetName 'TagInventory' `
-        -TableName 'TagInventory' -TableStyle $TableStyle -AutoSize -FreezeTopRow -BoldTopRow
+    $excelRows = @(Get-AzureUtilsTagExcelRow -Record $records -TagKey $FilterTags -IncludeTagSupport:$IncludeTagUnsupported)
+    $package = $excelRows | Export-Excel -Path $OutputPath -WorksheetName 'TagInventory' `
+        -TableName 'TagInventory' -TableStyle $TableStyle -AutoSize -FreezeTopRow -BoldTopRow -PassThru
+
+    if ($IncludeTagUnsupported) {
+        # Color the 'Tag Support' column: green when Supported, red when not. Exact
+        # equality avoids the 'Supported' / 'Not supported' substring collision.
+        $worksheet = $package.Workbook.Worksheets['TagInventory']
+        $colIndex  = ($excelRows[0].PSObject.Properties.Name).IndexOf('Tag Support') + 1
+        if ($colIndex -gt 0) {
+            $colLetter = [OfficeOpenXml.ExcelCellAddress]::GetColumnLetter($colIndex)
+            $range = '{0}2:{0}{1}' -f $colLetter, ($excelRows.Count + 1)
+            Add-ConditionalFormatting -Worksheet $worksheet -Range $range -RuleType Equal `
+                -ConditionValue '"Not supported"' -ForegroundColor 'White' -BackgroundColor 'Red'
+            Add-ConditionalFormatting -Worksheet $worksheet -Range $range -RuleType Equal `
+                -ConditionValue '"Supported"' -ForegroundColor 'Black' -BackgroundColor 'LightGreen'
+        }
+    }
+
+    Close-ExcelPackage $package
 
     Write-Host ("Report exported to {0}" -f $OutputPath)
 }

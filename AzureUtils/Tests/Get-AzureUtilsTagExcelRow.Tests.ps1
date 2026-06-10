@@ -61,6 +61,45 @@ Describe 'Get-AzureUtilsTagExcelRow' {
         }
     }
 
+    It 'with -IncludeTagSupport, inserts a Tag Support column after Region and before TAG_' {
+        InModuleScope AzureUtils {
+            $records = [System.Collections.Generic.List[object]]::new()
+            $records.Add([pscustomobject]@{
+                ResourceId = '/sub/1/r1'; ResourceName = 'vm1'; SubscriptionName = 'Prod'
+                ResourceGroupName = 'rg-a'; ResourceType = 'microsoft.compute/virtualmachines'
+                Region = 'eastus'; TagMap = @{ env = 'prod' }; TagSupported = $true
+            })
+            $records.Add([pscustomobject]@{
+                ResourceId = '/sub/1/r2'; ResourceName = 'nw1'; SubscriptionName = 'Prod'
+                ResourceGroupName = 'rg-a'; ResourceType = 'microsoft.network/networkwatchers'
+                Region = 'eastus'; TagMap = @{}; TagSupported = $false
+            })
+
+            $rows = @(Get-AzureUtilsTagExcelRow -Record $records -IncludeTagSupport)
+            $cols = $rows[0].PSObject.Properties.Name
+
+            # Tag Support sits at index 6, right after Region (index 5) and before any TAG_ column.
+            $cols[0..6] | Should -Be @('resourceId', 'Resource Name', 'Sub Name', 'Resource Group Name', 'Resource Type', 'Region', 'Tag Support')
+            ($cols.IndexOf('Tag Support')) | Should -BeLessThan ($cols.IndexOf('TAG_env'))
+
+            $rows[0].'Tag Support' | Should -Be 'Supported'
+            $rows[1].'Tag Support' | Should -Be 'Not supported'
+        }
+    }
+
+    It 'omits the Tag Support column when -IncludeTagSupport is not given' {
+        InModuleScope AzureUtils {
+            $records = [System.Collections.Generic.List[object]]::new()
+            $records.Add([pscustomobject]@{
+                ResourceId = 'a'; ResourceName = 'a'; SubscriptionName = 's'; ResourceGroupName = 'rg'
+                ResourceType = 't'; Region = 'r'; TagMap = @{ a = '1' }; TagSupported = $true
+            })
+
+            $rows = @(Get-AzureUtilsTagExcelRow -Record $records)
+            $rows[0].PSObject.Properties.Name | Should -Not -Contain 'Tag Support'
+        }
+    }
+
     It 'keeps identical columns across all rows' {
         InModuleScope AzureUtils {
             $records = [System.Collections.Generic.List[object]]::new()

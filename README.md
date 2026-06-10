@@ -38,6 +38,7 @@ Exports an Azure resource + tag inventory to an Excel workbook via Azure Resourc
 | `-FilterTags` | yes (`string[]`) | Export only these tag keys, in this order (default: all tags found). |
 | `-IncludeSubscription` | — | Also add the subscriptions themselves as rows (their own tags). |
 | `-IncludeResourceGroup` | — | Also add the resource groups themselves as rows (their own tags). |
+| `-IncludeTagUnsupported` | — | Keep resources whose type doesn't support tags (omitted by default) and add a colored `Tag Support` column. |
 | `-OutputPath` | — (required) | Destination `.xlsx` file. |
 | `-TableStyle` | — | Excel table style (default neutral `Light1`). |
 | `-Quiet` | — | Suppress per-resource log lines (show a progress bar instead). |
@@ -69,9 +70,14 @@ Export-AzureUtilsTagInventory -SubscriptionId $sub1, $sub2 `
 Export-AzureUtilsTagInventory -ManagementGroupId 'PLAT' `
     -IncludeSubscription -IncludeResourceGroup `
     -OutputPath '.\full.xlsx'
+
+# 6) Keep tag-unsupported resource types and flag them in a 'Tag Support' column
+Export-AzureUtilsTagInventory -IncludeTagUnsupported -OutputPath '.\inventory.xlsx'
 ```
 
 > By default only resource-level tags are inventoried. `-IncludeSubscription` and `-IncludeResourceGroup` add the subscriptions / resource groups as extra rows (from `resourcecontainers`) so tags applied at those scopes are captured too.
+>
+> By default, resources whose **resource type does not support tags** (e.g. `networkWatchers`, classic resources) are **omitted** — they would only add empty `TAG_` rows. The console header reports how many were skipped. `-IncludeTagUnsupported` keeps them and adds a `Tag Support` column (`Supported` in green / `Not supported` in red). Tag support is resolved from the ARM Resource Providers API (`capabilities` → `SupportsTags`), with a curated fallback if that call is unavailable.
 
 Console report:
 
