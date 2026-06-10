@@ -6,6 +6,21 @@ All notable changes to AzureUtils are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-06-10
+
+### Added
+- `Export-AzureUtilsTagInventory -IncludeTagUnsupported`: keeps resources whose
+  resource type does not support tags and adds a `Tag Support` column flagging
+  each row as `Supported` (green) or `Not supported` (red). Tag support is
+  resolved from the ARM Resource Providers API (`capabilities` -> `SupportsTags`),
+  with a curated fallback when that call is unavailable.
+
+### Changed
+- `Export-AzureUtilsTagInventory` now **omits** resources whose resource type does
+  not support tags by default (they previously appeared with empty `TAG_` cells).
+  The console header reports how many rows were skipped. Use `-IncludeTagUnsupported`
+  to restore the previous all-resources behavior (with the `Tag Support` column).
+
 ## [0.1.9] - 2026-06-03
 
 ### Added

@@ -18,7 +18,11 @@ function Get-AzureUtilsTagExcelRow {
         [System.Collections.Generic.List[object]] $Record,
 
         # Restrict/order the tag columns. When omitted, the sorted union is used.
-        [string[]] $TagKey
+        [string[]] $TagKey,
+
+        # Insert a 'Tag Support' column (from each record's TagSupported flag) right
+        # after 'Region', before the TAG_ columns.
+        [switch] $IncludeTagSupport
     )
 
     if ($TagKey) {
@@ -42,6 +46,10 @@ function Get-AzureUtilsTagExcelRow {
             'Resource Group Name' = $rec.ResourceGroupName
             'Resource Type'       = $rec.ResourceType
             'Region'              = $rec.Region
+        }
+
+        if ($IncludeTagSupport) {
+            $row['Tag Support'] = if ($rec.TagSupported) { 'Supported' } else { 'Not supported' }
         }
 
         foreach ($key in $columns) {

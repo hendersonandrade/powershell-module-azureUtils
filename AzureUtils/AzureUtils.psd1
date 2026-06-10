@@ -3,7 +3,7 @@
     RootModule        = 'AzureUtils.psm1'
 
     # Version number of this module (used by the tag pipeline to build the git tag).
-    ModuleVersion     = '0.1.9'
+    ModuleVersion     = '0.1.10'
 
     # Pre-release label. When set, the tag becomes v{ModuleVersion}-{Prerelease}
     # and the PowerShell Gallery package is published as a pre-release.
