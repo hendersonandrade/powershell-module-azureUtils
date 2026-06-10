@@ -1,5 +1,12 @@
 # AzureUtils
 
+[![Validate PowerShell Module](https://github.com/hendersonandrade/powershell-module-azureUtils/actions/workflows/validate-module.yml/badge.svg)](https://github.com/hendersonandrade/powershell-module-azureUtils/actions/workflows/validate-module.yml)
+[![Publish PowerShell Gallery](https://github.com/hendersonandrade/powershell-module-azureUtils/actions/workflows/publish-powershell-gallery.yml/badge.svg)](https://github.com/hendersonandrade/powershell-module-azureUtils/actions/workflows/publish-powershell-gallery.yml)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/AzureUtils?logo=powershell&logoColor=white&label=PSGallery)](https://www.powershellgallery.com/packages/AzureUtils)
+[![Downloads](https://img.shields.io/powershellgallery/dt/AzureUtils?color=blue&label=downloads)](https://www.powershellgallery.com/packages/AzureUtils)
+[![PowerShell 7+](https://img.shields.io/badge/PowerShell-7%2B-5391FE?logo=powershell&logoColor=white)](https://learn.microsoft.com/powershell/scripting/install/installing-powershell)
+[![License: MIT](https://img.shields.io/github/license/hendersonandrade/powershell-module-azureUtils?color=green)](LICENSE)
+
 Practical utility cmdlets for **Azure administration, governance, inventory, troubleshooting and operational automation**. AzureUtils does not replace the `Az` modules — it encapsulates real day-to-day pain (inventory at scale, cross-cutting diagnostics, governance checks, safe fixes) behind **simple commands with normalized, automation-ready output**.
 
 - **PowerShell 7+ only** (`CompatiblePSEditions = Core`).
